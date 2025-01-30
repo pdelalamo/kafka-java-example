@@ -1,5 +1,7 @@
 # Kafka + Zookeeper + Java Example
 
+ES:
+
 Este repositorio contiene un ejemplo básico para entender cómo funcionan **Kafka** y **Zookeeper** utilizando **Java** para crear un productor y un consumidor de mensajes.
 
 ## Requisitos
@@ -32,3 +34,29 @@ Este repositorio contiene un ejemplo básico para entender cómo funcionan **Kaf
 
 2. Ejecuta el **consumidor** para recibir mensajes desde Kafka:
     java -cp target/kafka-java-example-1.0-SNAPSHOT.jar com.example.kafka.ConsumerExample
+
+EN:
+
+This repository contains a basic example to understand how Kafka and Zookeeper work using Java to create a message producer and consumer.
+
+Requirements
+Docker
+Java SDK
+Apache Maven
+Installation
+Clone this repository:
+
+git clone https://github.com/pdelalamo/kafka-java-example.git
+cd kafka-java-example
+
+Start Kafka and Zookeeper with Docker: docker-compose up
+
+Create the topic in Kafka: docker exec -it code-kafka-1 /bin/sh
+kafka-topics.sh --create --topic test-topic --bootstrap-server localhost:9092 --partitions 1 --replication-factor 1
+
+Build the project: mvn package
+
+Usage
+Run the producer to send messages to Kafka: java -cp target/kafka-java-example-1.0-SNAPSHOT.jar com.example.kafka.ProducerExample
+
+Run the consumer to receive messages from Kafka: java -cp target/kafka-java-example-1.0-SNAPSHOT.jar com.example.kafka.ConsumerExample
