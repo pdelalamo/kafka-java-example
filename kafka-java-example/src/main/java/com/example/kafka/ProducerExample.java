@@ -7,30 +7,43 @@ import java.util.Properties;
 
 public class ProducerExample {
 
+    private static final String BOOTSTRAP_SERVERS = "localhost:9092";
+    private static final String TOPIC = "test-topic";
+    private static final String MESSAGE = "Hello Kafka from Java!";
+
     public static void main(String[] args) {
-        // Configuraciones del productor
+        Properties producerProperties = createProducerProperties();
+
+        try (KafkaProducer<String, String> producer = new KafkaProducer<>(producerProperties)) {
+            sendMessage(producer, TOPIC, MESSAGE);
+        }
+    }
+
+    private static Properties createProducerProperties() {
         Properties properties = new Properties();
-        properties.put(ProducerConfig.BOOTSTRAP_SERVERS_CONFIG, "localhost:9092");
+        properties.put(ProducerConfig.BOOTSTRAP_SERVERS_CONFIG, BOOTSTRAP_SERVERS);
         properties.put(ProducerConfig.KEY_SERIALIZER_CLASS_CONFIG, StringSerializer.class.getName());
         properties.put(ProducerConfig.VALUE_SERIALIZER_CLASS_CONFIG, StringSerializer.class.getName());
+        return properties;
+    }
 
-        KafkaProducer<String, String> producer = new KafkaProducer<>(properties);
-
-        String topic = "test-topic";
-        String message = "Hello Kafka from Java!";
-
-        // Enviar el mensaje
+    private static void sendMessage(KafkaProducer<String, String> producer, String topic, String message) {
         ProducerRecord<String, String> record = new ProducerRecord<>(topic, message);
         producer.send(record, (metadata, exception) -> {
             if (exception == null) {
-                System.out.println("Mensaje enviado con éxito a " + metadata.topic() +
-                        " partición: " + metadata.partition() + " offset: " + metadata.offset());
+                logSuccess(metadata);
             } else {
-                exception.printStackTrace();
+                logError(exception);
             }
         });
+    }
 
-        // Cerrar el productor
-        producer.close();
+    private static void logSuccess(RecordMetadata metadata) {
+        System.out.printf("Message successfully sent to %s, partition: %d, offset: %d%n", 
+                          metadata.topic(), metadata.partition(), metadata.offset());
+    }
+
+    private static void logError(Exception exception) {
+        exception.printStackTrace();
     }
 }
